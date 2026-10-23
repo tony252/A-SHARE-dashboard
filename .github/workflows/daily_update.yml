@@ -13,6 +13,10 @@ on:
       - 'build_html.py'
       - '.github/workflows/daily_update.yml'
 
+concurrency:
+  group: hourly-dashboard-update
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -60,4 +64,19 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/style_indices_v2.csv data/etf_flow.csv data/etf_price.csv dashboard_data.json dashboard_data.js dashboard.html index.html version.json
-          git diff --staged --quiet || (git commit -m "Auto update $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')" && git push)
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Auto update $(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')"
+          # 推送：最多重试 3 次，每次先 rebase（schedule 与 workflow_dispatch 可能同时触发）
+          for i in 1 2 3; do
+            if git pull --rebase origin main && git push; then
+              echo "Pushed successfully"
+              exit 0
+            fi
+            echo "Push attempt $i failed, retrying..."
+            sleep 5
+          done
+          echo "Push failed after 3 attempts" >&2
+          exit 1
