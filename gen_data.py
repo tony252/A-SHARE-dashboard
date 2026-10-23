@@ -17,7 +17,10 @@ BENCHMARKS=['上证指数','沪深300','上证50','中证500','中证1000','创�
 sz=df['上证指数']; sz_cur=sz.iloc[-1]
 sz_ma20=sz.iloc[-20:].mean(); sz_ma60=sz.iloc[-60:].mean()
 sz_ma120=sz.iloc[-120:].mean(); sz_ma250=sz.iloc[-250:].mean()
-sz_dd=(sz/sz.expanding().max()-1).iloc[-1]
+# 滚动 250 日高点: 全历史最高点会让回撤永久为负(2015 年后未创新高),
+# GREEN 信号自 2015-06 起再未出现。滚动窗口才反映当前市场状态。
+sz_dd=(sz/sz.rolling(250).max()-1).iloc[-1]
+sz_dd_alltime=(sz/sz.expanding().max()-1).iloc[-1]
 
 # 180d for chart
 r180=df.iloc[-180:]
@@ -26,8 +29,9 @@ sz_180=r180['上证指数'].tolist()
 
 # YTD
 ytd={}
+year_start = f"{df.index[-1].year}-01-01"
 for col in STYLES+['上证50','沪深300','中证500','中证1000','创业板指','中证红利']:
-    s=df[col];m=s.index>='2026-01-01';ytd[col]=round(s[m].iloc[-1]/s[m].iloc[0]-1,4)
+    s=df[col];m=s.index>=year_start;ytd[col]=round(s[m].iloc[-1]/s[m].iloc[0]-1,4)
 
 # Value/Growth ratios (360d)
 vg_data={}
@@ -58,7 +62,7 @@ for st in STYLES:
 lv_vs_lg=round(r180['大盘价值'].iloc[-1]/r180['大盘价值'].iloc[-60]-1-(r180['大盘成长'].iloc[-1]/r180['大盘成长'].iloc[-60]-1),4)
 rets_60={st:round(r180[st].iloc[-1]/r180[st].iloc[-60]-1,4) for st in STYLES}
 rets_20={st:round(r180[st].iloc[-1]/r180[st].iloc[-20]-1,4) for st in STYLES}
-best_60=max(rets_20,key=rets_20.get); worst_60=min(rets_20,key=rets_20.get)
+best_20=max(rets_20,key=rets_20.get); worst_20=min(rets_20,key=rets_20.get)
 
 # Risk flags (内生风险信号，不含国家队)
 risk_flags=[]
@@ -130,9 +134,9 @@ if os.path.exists(etf_flow_path):
     etf_names = [str(i).split(' ', 1)[1] if ' ' in str(i) else str(i) for i in ef.index]
     etf_codes = [str(i).split(' ', 1)[0] for i in ef.index]
     
-    # ETF NAV estimates (hardcoded — accurate enough, avoids slow API call)
+    # ETF NAV: 优先用抓取到的真实收盘价(腾讯), 缺失时才回退到硬编码表
     etf_nav = {}
-    # Fallback: these approximate NAV don't change significantly day-to-day
+    # Fallback: 仅当真实价格缺失时使用(历史值, 已明显偏离现价)
     FALLBACK_PRICE = {
         '510300': 4.8, '510310': 4.5, '510330': 4.8, '159919': 4.8,
         '510050': 3.0, '510500': 8.0,
@@ -143,9 +147,22 @@ if os.path.exists(etf_flow_path):
         '510880': 3.5, '512890': 1.7,
         '512880': 1.1,
     }
+    price_path = os.path.join(BASE, 'data', 'etf_price.csv')
+    price_lookup = {}
+    if os.path.exists(price_path):
+        try:
+            p_df = pd.read_csv(price_path, index_col=0, parse_dates=True)
+            for code in p_df.columns:
+                s = p_df[code].dropna()
+                if len(s):
+                    price_lookup[str(code)] = float(s.iloc[-1])
+        except Exception as e:
+            print(f"price csv read error: {e}")
+    print(f"real ETF prices loaded: {len(price_lookup)}")
     
     for i, code in enumerate(etf_codes):
-        price = etf_nav.get(code, FALLBACK_PRICE.get(code, 1.0))
+        price = price_lookup.get(code, FALLBACK_PRICE.get(code, 1.0))
+        etf_nav[code] = price
         row = {'code': code, 'name': etf_names[i], 'price': round(price, 2)}
         for d in last_dates:
             ds = str(d)[:10]
@@ -248,9 +265,8 @@ rf_count = len([f for f in risk_flags if not f.startswith('🪂')])
 if national_team_active:
     p_lo = max(p_lo, 10)  # 底线: 国家队托底中至少留10%
 status_desc = {level: build_advice(level, *position_base[level], national_team_active) for level in position_base}
-if national_team_active:
-    # 微调当前级别的上限
-    status_desc[overall] = build_advice(overall, max(p_lo, 10), p_hi, True)
+# 当前级别必须用截断后的 p_lo/p_hi 重建, 否则安全阀(上限20%)不会显示
+status_desc[overall] = build_advice(overall, p_lo, p_hi, national_team_active)
 
 # Latest values
 last=df.iloc[-1]
@@ -260,11 +276,13 @@ data={
     'sh_index':round(sz_cur,0),
     'ma20':round(sz_ma20,0),'ma60':round(sz_ma60,0),'ma120':round(sz_ma120,0),'ma250':round(sz_ma250,0),
     'drawdown':round(sz_dd,4),
+    'drawdown_alltime':round(sz_dd_alltime,4),
     'above_ma250':to_py(sz_cur>sz_ma250),'above_ma120':to_py(sz_cur>sz_ma120),'above_ma60':to_py(sz_cur>sz_ma60),
     'above_ma20':to_py(sz_cur>sz_ma20),'ma_bull':to_py(sz_ma60>sz_ma120>sz_ma250),
     'bdd_count':bd,'risk_flags':risk_flags,'rf_count':rf_count,
     'overall':overall,'overall_label':status_labels[overall],'overall_desc':status_desc[overall],
-    'best_60':best_60,'worst_60':worst_60,'best_60_val':rets_20[best_60],'worst_60_val':rets_20[worst_60],
+    'best_20':best_20,'worst_20':worst_20,'best_20_val':rets_20[best_20],'worst_20_val':rets_20[worst_20],
+    'best_60':best_20,'worst_60':worst_20,'best_60_val':rets_20[best_20],'worst_60_val':rets_20[worst_20],
     'lv_vs_lg':lv_vs_lg,
     'benchmarks':{k:round(last[k],0) for k in BENCHMARKS},
     'ytd':ytd,'vg_data':vg_data,'ls_data':ls_data,'roll_data':roll_data,

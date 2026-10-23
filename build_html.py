@@ -108,7 +108,7 @@ canvas { max-height: 280px; }
   <div class="card kpi">
     <div class="label">当前回撤</div>
     <div class="value red" id="kpiDD"></div>
-    <div class="sub">历史最大回撤 -52.3%</div>
+    <div class="sub" id="ddNote">历史最大回撤 -52.3%</div>
   </div>
   <div class="card kpi">
     <div class="label">最强风格(20日)</div>
@@ -159,6 +159,16 @@ canvas { max-height: 280px; }
   <div class="card">
     <h3>🏛️ 国家队ETF行动跟踪</h3>
     <div id="etfTable"></div>
+  </div>
+</div>
+
+<!-- DISCLAIMER -->
+<div class="card" style="margin-bottom:16px;border-left:3px solid #f39c12;">
+  <div style="font-size:13px;color:#8b949e;line-height:1.7;">
+    <b style="color:#f39c12;">⚠️ 使用说明（务必先读）</b><br>
+    本页四色评级是对<b>当前市场状态的描述</b>，不是经过验证的择时信号：回测显示各评级的前瞻收益并不单调，
+    历史最大回撤 -52.3%。<b>不要直接按本页仓位建议下单</b>。<br>
+    ETF 金额 = 份额变化 × 当日收盘价；份额数据来自交易所公告，可能存在 T+1 延迟与缺失（缺失显示为「-」）。
   </div>
 </div>
 
@@ -216,6 +226,14 @@ document.getElementById('kpiBestV').textContent = (bv>=0?'+':'') + bv.toFixed(1)
 document.getElementById('kpiWorst').textContent = DATA.worst_60;
 document.getElementById('kpiWorstV').textContent = (DATA.worst_60_val*100).toFixed(1) + '%';
 document.getElementById('adviceBox').textContent = DATA.overall_desc;
+
+// 回撤口径说明: 250日滚动高点 vs 全历史最高点
+if (DATA.drawdown_alltime !== undefined) {
+  var ddNote = document.getElementById('ddNote');
+  if (ddNote) {
+    ddNote.textContent = '近250日高点口径; 全历史高点口径 ' + (DATA.drawdown_alltime*100).toFixed(1) + '%';
+  }
+}
 
 // ===== SIGNAL PANEL =====
 (function() {
@@ -332,6 +350,14 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
     var c = mv > threshold ? '#e74c3c' : (mv < -threshold ? '#2ecc71' : '#c9d1d9');
     return '<span style=\"color:'+c+';font-size:13px;\">'+(mv>=0?'+':'')+mv.toFixed(1)+'亿</span>';
   }
+
+  // null = 没算过, 不是 0 —— 必须区分, 否则显示成假的 "+0.0亿"
+  function fmtMoneyOrDash(mv, threshold) {
+    if (mv === null || mv === undefined) {
+      return '<span style=\"color:#555;font-size:13px;\">-</span>';
+    }
+    return fmtMoney(mv, threshold);
+  }
   
   var html = '<div style=\"margin-bottom:4px;font-size:13px;color:#8b949e;\"> ETF净申购金额 (亿元)</div>';
   html += '<table style=\"width:100%;font-size:13px;border-collapse:collapse;\">';
@@ -352,11 +378,11 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
     html += '<td style=\"padding:3px 5px;\"><span style=\"color:#58a6ff;font-size:13px;\">'+r.code+'</span> <span style=\"font-size:12px;\">'+r.name+'</span></td>';
     for (var di = 0; di < dates.length; di++) {
       var ds = dates[di];
-      html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(r[ds+'_m']||0, 1)+'</td>';
+      html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoneyOrDash(r[ds+'_m'], 1)+'</td>';
     }
-    html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(r.d3_m||0, 3)+'</td>';
-    html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(r.d5_m||0, 3)+'</td>';
-    html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(r.d10_m||0, 3)+'</td>';
+    html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoneyOrDash(r.d3_m, 3)+'</td>';
+    html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoneyOrDash(r.d5_m, 3)+'</td>';
+    html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoneyOrDash(r.d10_m, 3)+'</td>';
     html += '</tr>';
   }
   
@@ -365,11 +391,11 @@ document.getElementById('adviceBox').textContent = DATA.overall_desc;
   html += '<td style=\"padding:3px 5px;\">合计</td>';
   for (var di = 0; di < dates.length; di++) {
     var ds = dates[di];
-    html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(summary[ds+'_m']||0, 5)+'</td>';
+    html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoneyOrDash(summary[ds+'_m'], 5)+'</td>';
   }
-  html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(summary.d3_m||0, 5)+'</td>';
-  html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(summary.d5_m||0, 5)+'</td>';
-  html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoney(summary.d10_m||0, 5)+'</td>';
+  html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoneyOrDash(summary.d3_m, 5)+'</td>';
+  html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoneyOrDash(summary.d5_m, 5)+'</td>';
+  html += '<td style=\"text-align:right;padding:3px 6px;\">'+fmtMoneyOrDash(summary.d10_m, 5)+'</td>';
   html += '</tr>';
   html += '</table>';
   
