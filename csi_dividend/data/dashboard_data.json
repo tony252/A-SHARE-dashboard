@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-23 10:18:12",
+ "generated_at": "2026-10-24 00:57:53",
  "last_trading_day": "2026-10-23",
  "csi": 5398.82,
  "ma200": 5595.08,
@@ -26,10 +26,10 @@
  "base_position": 800000,
  "portfolio_max_dd": 0.0,
  "csi_max_dd": -0.056,
- "pe_cur": 9.14,
- "pe_pct": 87.3,
- "dy_cur": 4.16,
- "dy_pct": 12.4,
+ "pe_cur": 9.02,
+ "pe_pct": 85.4,
+ "dy_cur": 4.21,
+ "dy_pct": 14.1,
  "ts_180": [
   "2026-01-22",
   "2026-01-23",
