@@ -8,7 +8,7 @@
 <meta http-equiv="Expires" content="0">
 <title>A股风格轮动盯盘仪表盘</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-<script src="dashboard_data.js?v=20261028171349"></script>
+<script src="dashboard_data.js?v=20261029042837"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, 'Microsoft YaHei', sans-serif; background: #0d1117; color: #c9d1d9; padding: 16px; font-size: 15px; }
@@ -130,7 +130,7 @@ canvas { max-height: 280px; }
     <div id="riskFlags"></div>
     <div style="margin-top:12px;">
       <h3>💡 操作建议</h3>
-      <div class="advice-box RED" id="adviceBox">仓位控制在10-30%,仅保留防御底仓,等待底部信号 [国家队托底中,可偏向区间上限]</div>
+      <div class="advice-box RED" id="adviceBox">仓位控制在0-30%,仅保留防御底仓,等待底部信号</div>
     </div>
   </div>
   <div class="card">
@@ -492,10 +492,10 @@ if (IS_LOCAL_SERVER) {
 }
 
 // ===== VERSION POLLING (auto-detect new deployments) =====
-var BUILD_TIME = '10-28 17:13';
+var BUILD_TIME = '10-29 04:28';
 (function() {
   var freshnessEl = document.getElementById('freshness');
-  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '10-28 17:13') {
+  if (freshnessEl && BUILD_TIME && BUILD_TIME !== '10-29 04:28') {
     freshnessEl.textContent = freshnessEl.textContent + ' | 构建: ' + BUILD_TIME;
   }
 
