@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-30 06:10:24",
+ "generated_at": "2026-10-30 10:30:38",
  "last_trading_day": "2026-10-29",
  "is_trading_day": true,
  "ndx": 29402.51,
@@ -7,14 +7,14 @@
  "vix": 17.2,
  "ndx_ma200": 27634.09,
  "ndx_ma200_ratio": 1.064,
- "cnn_fng_score": 34.6,
+ "cnn_fng_score": 34.22,
  "cnn_fng_rating": "fear",
  "score_ma200": 0,
  "pct_ma200": 47.5,
  "score_vix": 0,
  "score_cnn": -2,
  "pct_vix": 43.6,
- "pct_cnn": 10.9,
+ "pct_cnn": 10.8,
  "composite_score": 0,
  "valuation_level": "neutral",
  "valuation_label": "中性/合理估值",
@@ -1123,9 +1123,9 @@
   29.8285714285714,
   32.8857142857143,
   34.4,
-  34.6,
-  34.6,
-  34.6
+  34.2159663865546,
+  34.2159663865546,
+  34.2159663865546
  ],
  "ratio_ts": [
   "2025-05-06",
