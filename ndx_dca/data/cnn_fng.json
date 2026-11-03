@@ -1,8 +1,8 @@
 {
  "current": {
-  "score": 25.8142857142857,
-  "rating": "fear",
-  "timestamp": "2026-11-02T11:28:31+00:00"
+  "score": 22.7285714285714,
+  "rating": "extreme fear",
+  "timestamp": "2026-11-02T23:59:46+00:00"
  },
  "previous_close": 26.2386554621849,
  "previous_1_week": 29.8285714285714,
@@ -1251,18 +1251,18 @@
   },
   {
    "date": "2026-10-30",
-   "score": 25.8142857142857,
+   "score": 26.3193277310924,
    "rating": "fear"
   },
   {
    "date": "2026-11-02",
-   "score": 25.8142857142857,
-   "rating": "fear"
+   "score": 22.7285714285714,
+   "rating": "extreme fear"
   },
   {
    "date": "2026-11-02",
-   "score": 25.8142857142857,
-   "rating": "fear"
+   "score": 22.7285714285714,
+   "rating": "extreme fear"
   }
  ]
 }
