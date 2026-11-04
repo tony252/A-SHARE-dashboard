@@ -1,19 +1,14 @@
 {
  "current": {
-  "score": 18.7739130434783,
+  "score": 19.0915113871636,
   "rating": "extreme fear",
-  "timestamp": "2026-11-03T11:09:31+00:00"
+  "timestamp": "2026-11-03T23:59:48+00:00"
  },
  "previous_close": 22.7285714285714,
  "previous_1_week": 32.8857142857143,
  "previous_1_month": 38.199999999999996,
  "previous_1_year": 32.6,
  "history": [
-  {
-   "date": "2025-11-03",
-   "score": 32.6,
-   "rating": "fear"
-  },
   {
    "date": "2025-11-04",
    "score": 20.94285714285714,
@@ -1256,17 +1251,17 @@
   },
   {
    "date": "2026-11-02",
-   "score": 18.7739130434783,
+   "score": 19.391718426501,
    "rating": "extreme fear"
   },
   {
    "date": "2026-11-03",
-   "score": 18.7739130434783,
+   "score": 19.0915113871636,
    "rating": "extreme fear"
   },
   {
    "date": "2026-11-03",
-   "score": 18.7739130434783,
+   "score": 19.0915113871636,
    "rating": "extreme fear"
   }
  ]
