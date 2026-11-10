@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-10 07:36:22",
+ "generated_at": "2026-11-10 11:54:22",
  "last_trading_day": "2026-11-09",
  "is_trading_day": true,
  "ndx": 27907.63,
@@ -7,14 +7,14 @@
  "vix": 19.92,
  "ndx_ma200": 27715.03,
  "ndx_ma200_ratio": 1.0069,
- "cnn_fng_score": 31.69,
+ "cnn_fng_score": 33.23,
  "cnn_fng_rating": "fear",
  "score_ma200": -1,
  "pct_ma200": 27.5,
  "score_vix": 0,
  "score_cnn": -2,
  "pct_vix": 57.2,
- "pct_cnn": 10.6,
+ "pct_cnn": 10.7,
  "composite_score": -1,
  "valuation_level": "mildly_undervalued",
  "valuation_label": "轻度低估",
@@ -1123,9 +1123,9 @@
   34.1714285714286,
   19.9911468812877,
   24.3531746031746,
-  31.6857142857143,
-  31.6857142857143,
-  31.6857142857143
+  33.2285714285714,
+  33.2285714285714,
+  33.2285714285714
  ],
  "ratio_ts": [
   "2025-05-15",
